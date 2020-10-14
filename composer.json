@@ -2,6 +2,11 @@
     "name": "oskarstark/env-var-extension",
     "type": "library",
     "description": "A Twig extension to access env variables",
+    "keywords": [
+        "twig",
+        "twig-extension",
+        "environment-variables"
+    ],
     "license": "MIT",
     "authors": [
         {
