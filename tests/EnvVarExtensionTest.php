@@ -49,7 +49,7 @@ final class EnvVarExtensionTest extends TestCase
     public function getEnvThrowsExceptionOn(string $value): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('String must not be empty');
+        $this->expectExceptionMessage('String must notq be empty');
 
         $extension = new EnvVarExtension();
         $extension->getEnv($value);
