@@ -20,12 +20,12 @@
     },
     "autoload": {
         "psr-4": {
-            "OskarStark\\": "src/"
+            "OskarStark\\Twig\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "OskarStark\\Tests\\": "tests/"
+            "OskarStark\\Tests\\Twig\\": "tests/"
         }
     }
 }
