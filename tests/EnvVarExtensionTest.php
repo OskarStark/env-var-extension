@@ -39,4 +39,34 @@ final class EnvVarExtensionTest extends TestCase
         static::assertInstanceOf(TwigFunction::class, $function);
         static::assertSame('has_env', $function->getName());
     }
+
+    /**
+     * @test
+     *
+     * @dataProvider \Ergebnis\Test\Util\DataProvider\StringProvider::empty()
+     * @dataProvider \Ergebnis\Test\Util\DataProvider\StringProvider::blank()
+     */
+    public function getEnvThrowsExceptionOn(string $value): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('String must not be empty');
+
+        $extension = new EnvVarExtension();
+        $extension->getEnv($value);
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider \Ergebnis\Test\Util\DataProvider\StringProvider::empty()
+     * @dataProvider \Ergebnis\Test\Util\DataProvider\StringProvider::blank()
+     */
+    public function hasEnvThrowsExceptionOn(string $value): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('String must not be empty');
+
+        $extension = new EnvVarExtension();
+        $extension->hasEnv($value);
+    }
 }
