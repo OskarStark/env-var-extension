@@ -6,4 +6,4 @@ cs:
 	docker run --rm -it -w /app -v ${PWD}:/app oskarstark/php-cs-fixer-ga:2.16.4
 
 test:
-	php vendor/bin/phpunit -v
+	php vendor/bin/phpunit -v -c phpunit.xml.dist
