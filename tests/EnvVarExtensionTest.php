@@ -14,6 +14,9 @@ final class EnvVarExtensionTest extends TestCase
 {
     use Helper;
 
+    /**
+     * @test
+     */
     public function extendAbstractExtension(): void
     {
         self::assertClassExtends(
