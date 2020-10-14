@@ -4,12 +4,24 @@ declare(strict_types=1);
 
 namespace OskarStark\Tests\Twig;
 
+use Ergebnis\Test\Util\Helper;
 use OskarStark\Twig\EnvVarExtension;
 use PHPUnit\Framework\TestCase;
+use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 final class EnvVarExtensionTest extends TestCase
 {
+    use Helper;
+
+    public function extendAbstractExtension(): void
+    {
+        self::assertClassExtends(
+            AbstractExtension::class,
+            EnvVarExtension::class
+        );
+    }
+
     /**
      * @test
      */
