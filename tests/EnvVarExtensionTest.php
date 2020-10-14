@@ -28,6 +28,14 @@ final class EnvVarExtensionTest extends TestCase
     /**
      * @test
      */
+    public function isFinal(): void
+    {
+        self::assertClassIsFinal(EnvVarExtension::class);
+    }
+
+    /**
+     * @test
+     */
     public function numberOfFunctions(): void
     {
         $extension = new EnvVarExtension();
