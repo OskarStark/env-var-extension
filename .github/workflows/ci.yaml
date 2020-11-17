@@ -39,11 +39,11 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout
+            - name: "Checkout code"
               uses: actions/checkout@v2
 
             - name: PHPStan
-              uses: docker://oskarstark/phpstan-ga:0.12.49
+              uses: docker://oskarstark/phpstan-ga:0.12.56
               with:
                   args: analyse src --level=7
 
