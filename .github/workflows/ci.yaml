@@ -64,6 +64,13 @@ jobs:
                     - 'lowest'
                     - 'highest'
                 allowed-to-fail: [false]
+                include:
+                    - php-version: '8.0'
+                      dependencies: 'lowest'
+                      allowed-to-fail: true
+                    - php-version: '8.0'
+                      dependencies: 'highest'
+                      allowed-to-fail: true
 
         steps:
             - name: "Checkout code"
