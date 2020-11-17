@@ -48,11 +48,11 @@ jobs:
                   args: analyse src --level=7
 
     test:
-        name: PHP ${{ matrix.php-version }}
+        name: "PHP ${{ matrix.php-version }} + ${{ matrix.dependencies }}"
 
         runs-on: ubuntu-latest
 
-        continue-on-error: ${{ matrix.allowed_to_fail }}
+        continue-on-error: ${{ matrix.allowed-to-fail }}
 
         strategy:
             matrix:
@@ -60,34 +60,30 @@ jobs:
                     - '7.2'
                     - '7.3'
                     - '7.4'
-                allowed_to_fail: [false]
+                dependencies:
+                    - 'lowest'
+                    - 'highest'
+                allowed-to-fail: [false]
 
         steps:
-            - name: Checkout
+            - name: "Checkout code"
               uses: actions/checkout@v2
 
             - name: Install PHP with extensions
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: ${{ matrix.php-version }}
-                  tools: composer:v2
+                  coverage: "none"
+                  php-version: "${{ matrix.php-version }}"
+                  tools: "composer:v2"
 
             - name: Add PHPUnit matcher
               run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
-            - name: Set Composer cache directory
-              id: composer-cache
-              run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-            - name: Cache Composer
-              uses: actions/cache@v2
+            - name: "Composer install"
+              uses: "ramsey/composer-install@v1"
               with:
-                  path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-${{ matrix.php-version }}-composer-${{ matrix.dependencies }}-${{ matrix.variant }}
-                  restore-keys: ${{ runner.os }}-${{ matrix.php-version }}-composer-
+                  dependency-versions: "${{ matrix.dependencies }}"
+                  composer-options: "--prefer-dist"
 
-            - name: Install Composer dependencies
-              run: composer install --prefer-dist --no-progress --no-interaction
-
-            - name: Run Tests
-              run: make test
+            - name: Run tests
+              run: vendor/bin/phpunit -v
