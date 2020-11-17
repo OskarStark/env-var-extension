@@ -13,11 +13,11 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout
+            - name: "Checkout code"
               uses: actions/checkout@v2
 
             - name: PHP-CS-Fixer
-              uses: docker://oskarstark/php-cs-fixer-ga:2.16.4
+              uses: docker://oskarstark/php-cs-fixer-ga:2.16.7
               with:
                   args: --diff --dry-run
 
