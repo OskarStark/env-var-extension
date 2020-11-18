@@ -60,17 +60,11 @@ jobs:
                     - '7.2'
                     - '7.3'
                     - '7.4'
+                    - '8.0'
                 dependencies:
                     - 'lowest'
                     - 'highest'
                 allowed-to-fail: [false]
-                include:
-                    - php-version: '8.0'
-                      dependencies: 'lowest'
-                      allowed-to-fail: true
-                    - php-version: '8.0'
-                      dependencies: 'highest'
-                      allowed-to-fail: true
 
         steps:
             - name: "Checkout code"
@@ -85,6 +79,10 @@ jobs:
 
             - name: Add PHPUnit matcher
               run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+            - name: "Remove friendsofphp/php-cs-fixer for PHP 8"
+              if: matrix.php-version == '8.0'
+              run: composer remove --dev friendsofphp/php-cs-fixer
 
             - name: "Composer install"
               uses: "ramsey/composer-install@v1"
