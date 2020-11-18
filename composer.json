@@ -21,7 +21,7 @@
     "require-dev": {
         "ergebnis/test-util": "^1.4",
         "friendsofphp/php-cs-fixer": "^2.16",
-        "phpunit/phpunit": "^8.5"
+        "phpunit/phpunit": "^8.5 || ^9.0"
     },
     "config": {
         "sort-packages": true
