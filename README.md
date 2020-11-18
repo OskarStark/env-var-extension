@@ -2,7 +2,7 @@
 
 This library provides methods to use environment variables in Twig templates.
 
-[![CI][test_badge]][test_link]
+[![CI][ci_badge]][ci_link]
 
 ## Installation
 
