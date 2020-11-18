@@ -118,7 +118,7 @@ jobs:
                 name: "Request review from @gansel-bot"
                 uses: "actions/github-script@v3"
                 with:
-                    github-token: "${{ secrets.GANSEL_BOT_TOKEN }}"
+                    github-token: "${{ secrets.GITHUB_TOKEN }}"
                     script: |
                         const pullRequest = context.payload.pull_request
                         const repository = context.repo
@@ -138,7 +138,7 @@ jobs:
                 name: "Assign @gansel-bot"
                 uses: "actions/github-script@v3"
                 with:
-                    github-token: "${{ secrets.GANSEL_BOT_TOKEN }}"
+                    github-token: "${{ secrets.GITHUB_TOKEN }}"
                     script: |
                         const pullRequest = context.payload.pull_request
                         const repository = context.repo
@@ -159,7 +159,7 @@ jobs:
                 uses: "actions/github-script@v3"
                 if: "github.actor != 'gansel-bot'"
                 with:
-                    github-token: "${{ secrets.GANSEL_BOT_TOKEN }}"
+                    github-token: "${{ secrets.GITHUB_TOKEN }}"
                     script: |
                         const pullRequest = context.payload.pull_request
                         const repository = context.repo
@@ -175,7 +175,7 @@ jobs:
                 name: "Merge pull request"
                 uses: "actions/github-script@v3"
                 with:
-                    github-token: "${{ secrets.GANSEL_BOT_TOKEN }}"
+                    github-token: "${{ secrets.GITHUB_TOKEN }}"
                     script: |
                         const pullRequest = context.payload.pull_request
                         const repository = context.repo
