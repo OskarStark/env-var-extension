@@ -33,7 +33,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "OskarStark\\Tests\\Twig\\": "tests/"
+            "OskarStark\\Twig\\Tests\\": "tests/"
         }
     }
 }

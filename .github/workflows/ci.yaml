@@ -47,7 +47,7 @@ jobs:
               with:
                   args: analyse src --level=7
 
-    test:
+    tests:
         name: "PHP ${{ matrix.php-version }} + ${{ matrix.dependencies }}"
 
         runs-on: ubuntu-latest
@@ -70,7 +70,7 @@ jobs:
               uses: actions/checkout@v2
 
             - name: Install PHP with extensions
-              uses: shivammathur/setup-php@v2
+              uses: shivammathur/setup-php@2.7.0
               with:
                   coverage: "none"
                   php-version: "${{ matrix.php-version }}"
@@ -87,3 +87,102 @@ jobs:
 
             - name: Run tests
               run: vendor/bin/phpunit -v
+
+    auto-merge:
+        name: "Auto-Merge"
+
+        needs:
+            - "php-cs-fixer"
+            - "composer-normalize"
+            - "tests"
+
+        runs-on: "ubuntu-latest"
+
+        if: >
+            github.event_name == 'pull_request' &&
+            github.event.pull_request.draft == false &&
+            (
+                github.event.action == 'opened' ||
+                github.event.action == 'reopened' ||
+                github.event.action == 'synchronize'
+            ) &&
+            (
+                (
+                    github.actor == 'dependabot[bot]' && startsWith(github.event.pull_request.title, 'github-actions(deps)')
+                ) ||
+                contains(github.event.pull_request.labels.*.name, 'merge')
+            )
+
+        steps:
+            -
+                name: "Request review from @gansel-bot"
+                uses: "actions/github-script@v3"
+                with:
+                    github-token: "${{ secrets.GANSEL_BOT_TOKEN }}"
+                    script: |
+                        const pullRequest = context.payload.pull_request
+                        const repository = context.repo
+
+                        const reviewers = [
+                            "gansel-bot",
+                        ]
+
+                        await github.pulls.requestReviewers({
+                            owner: repository.owner,
+                            pull_number: pullRequest.number,
+                            repo: repository.repo,
+                            reviewers: reviewers,
+                        })
+
+            -
+                name: "Assign @gansel-bot"
+                uses: "actions/github-script@v3"
+                with:
+                    github-token: "${{ secrets.GANSEL_BOT_TOKEN }}"
+                    script: |
+                        const pullRequest = context.payload.pull_request
+                        const repository = context.repo
+
+                        const reviewers = [
+                            "gansel-bot",
+                        ]
+
+                        await github.issues.addAssignees({
+                            assignees: reviewers,
+                            issue_number: pullRequest.number,
+                            owner: repository.owner,
+                            repo: repository.repo,
+                        })
+
+            -
+                name: "Approve pull request"
+                uses: "actions/github-script@v3"
+                if: "github.actor != 'gansel-bot'"
+                with:
+                    github-token: "${{ secrets.GANSEL_BOT_TOKEN }}"
+                    script: |
+                        const pullRequest = context.payload.pull_request
+                        const repository = context.repo
+
+                        await github.pulls.createReview({
+                            event: "APPROVE",
+                            owner: repository.owner,
+                            pull_number: pullRequest.number,
+                            repo: repository.repo,
+                        })
+
+            -
+                name: "Merge pull request"
+                uses: "actions/github-script@v3"
+                with:
+                    github-token: "${{ secrets.GANSEL_BOT_TOKEN }}"
+                    script: |
+                        const pullRequest = context.payload.pull_request
+                        const repository = context.repo
+
+                        await github.pulls.merge({
+                            merge_method: "rebase",
+                            owner: repository.owner,
+                            pull_number: pullRequest.number,
+                            repo: repository.repo,
+                        })
