@@ -26,7 +26,7 @@ To access the value of an existing environment variable ``BRANCH_NAME=develop``
 
 You can also check if an envirnment variable exists:
 ```twig
-{{ has_env(BRANCH_NAME) }} # prints 'true'
+{{ has_env(BRANCH_NAME) }} # returns: true
 ```
 
 [ci_badge]: https://github.com/OskarStark/env-var-extension/workflows/CI/badge.svg?branch=main
