@@ -8,18 +8,33 @@ name: CI
 
 jobs:
     php-cs-fixer:
-        name: PHP-CS-Fixer
+        name: PHP-CS-Fixer (${{ matrix.php-version }})
 
         runs-on: ubuntu-latest
 
+        strategy:
+            matrix:
+                php-version:
+                    - '7.2'
+
         steps:
             - name: "Checkout code"
-              uses: actions/checkout@v2
+              uses: actions/checkout@v2.3.4
 
-            - name: PHP-CS-Fixer
-              uses: docker://oskarstark/php-cs-fixer-ga:2.18.2
+            - name: Install PHP
+              uses: shivammathur/setup-php@2.10.0
               with:
-                  args: --diff --dry-run
+                  coverage: "none"
+                  php-version: ${{ matrix.php-version }}
+                  tools: composer:v2
+
+            - name: "Composer install"
+              uses: "ramsey/composer-install@1.3.0"
+              with:
+                  composer-options: "--prefer-dist"
+
+            - name: "Run friendsofphp/php-cs-fixer"
+              run: "vendor/bin/php-cs-fixer fix --diff --diff-format=udiff --verbose"
 
     composer-normalize:
         name: composer-normalize
@@ -34,18 +49,33 @@ jobs:
               uses: docker://ergebnis/composer-normalize-action:0.8.0
 
     phpstan:
-        name: PHPStan
+        name: PHPStan (${{ matrix.php-version }})
 
         runs-on: ubuntu-latest
 
+        strategy:
+            matrix:
+                php-version:
+                    - '7.2'
+
         steps:
             - name: "Checkout code"
-              uses: actions/checkout@v2
+              uses: actions/checkout@v2.3.4
 
-            - name: PHPStan
-              uses: docker://oskarstark/phpstan-ga:0.12.70
+            - name: Install PHP
+              uses: shivammathur/setup-php@2.10.0
               with:
-                  args: analyse src --level=7
+                  coverage: "none"
+                  php-version: ${{ matrix.php-version }}
+                  tools: composer:v2
+
+            - name: "Composer install"
+              uses: "ramsey/composer-install@1.3.0"
+              with:
+                  composer-options: "--prefer-dist"
+
+            - name: "Run phpstan/phpstan"
+              run: "vendor/bin/phpstan analyse -c phpstan.neon.dist"
 
     tests:
         name: "PHP ${{ matrix.php-version }} + ${{ matrix.dependencies }}"
@@ -80,77 +110,11 @@ jobs:
             - name: Add PHPUnit matcher
               run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
-            - name: "Remove friendsofphp/php-cs-fixer for PHP 8"
-              if: matrix.php-version == '8.0'
-              run: composer remove --dev friendsofphp/php-cs-fixer
-
             - name: "Composer install"
-              uses: "ramsey/composer-install@v1"
+              uses: "ramsey/composer-install@1.3.0"
               with:
                   dependency-versions: "${{ matrix.dependencies }}"
                   composer-options: "--prefer-dist"
 
             - name: Run tests
               run: vendor/bin/phpunit -v
-
-    auto-merge:
-        name: "Auto-Merge"
-
-        needs:
-            - "php-cs-fixer"
-            - "composer-normalize"
-            - "tests"
-
-        runs-on: "ubuntu-latest"
-
-        if: >
-            github.event_name == 'pull_request' &&
-            github.event.pull_request.draft == false &&
-            (
-                github.event.action == 'opened' ||
-                github.event.action == 'reopened' ||
-                github.event.action == 'synchronize'
-            ) &&
-            (
-                (
-                    github.actor == 'dependabot[bot]' && startsWith(github.event.pull_request.title, 'github-actions(deps)')
-                ) ||
-                contains(github.event.pull_request.labels.*.name, 'merge')
-            )
-
-        steps:
-            -
-                name: "Request review from @gansel-bot"
-                uses: "actions/github-script@v3"
-                with:
-                    github-token: "${{ secrets.GITHUB_TOKEN }}"
-                    script: |
-                        const pullRequest = context.payload.pull_request
-                        const repository = context.repo
-
-                        const reviewers = [
-                            "gansel-bot",
-                        ]
-
-                        await github.pulls.requestReviewers({
-                            owner: repository.owner,
-                            pull_number: pullRequest.number,
-                            repo: repository.repo,
-                            reviewers: reviewers,
-                        })
-
-            -
-                name: "Merge pull request"
-                uses: "actions/github-script@v3"
-                with:
-                    github-token: "${{ secrets.GITHUB_TOKEN }}"
-                    script: |
-                        const pullRequest = context.payload.pull_request
-                        const repository = context.repo
-
-                        await github.pulls.merge({
-                            merge_method: "rebase",
-                            owner: repository.owner,
-                            pull_number: pullRequest.number,
-                            repo: repository.repo,
-                        })
