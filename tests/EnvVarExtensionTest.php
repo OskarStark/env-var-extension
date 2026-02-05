@@ -49,7 +49,7 @@ final class EnvVarExtensionTest extends TestCase
     {
         $extension = new EnvVarExtension();
 
-        static::assertCount(2, $extension->getFunctions());
+        self::assertCount(2, $extension->getFunctions());
     }
 
     /**
@@ -64,12 +64,12 @@ final class EnvVarExtensionTest extends TestCase
         $functions = $extension->getFunctions();
 
         $function = $functions[0];
-        static::assertInstanceOf(TwigFunction::class, $function);
-        static::assertSame('env', $function->getName());
+        self::assertInstanceOf(TwigFunction::class, $function);
+        self::assertSame('env', $function->getName());
 
         $function = $functions[1];
-        static::assertInstanceOf(TwigFunction::class, $function);
-        static::assertSame('has_env', $function->getName());
+        self::assertInstanceOf(TwigFunction::class, $function);
+        self::assertSame('has_env', $function->getName());
     }
 
     /**

@@ -52,12 +52,7 @@ final class EnvVarExtension extends AbstractExtension
     public function hasEnv(string $env): bool
     {
         $env = self::validate($env);
-
-        if (getenv($env)) {
-            return true;
-        }
-
-        return false;
+        return (bool) getenv($env);
     }
 
     private static function validate(string $string): string
